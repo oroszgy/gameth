@@ -118,15 +118,18 @@ function getErrorMessage() {
     return ERROR_MESSAGES[Math.floor(Math.random() * ERROR_MESSAGES.length)];
 }
 
+// Maximum time (seconds) considered fast enough for a full speed bonus
+const ANSWER_TIME_LIMIT = 20;
+
 // Calculate score based on time
 // Correct: 10 base pts + speed bonus (0–9 pts for answers under 10 s) → 10–19 pts
 // Wrong: -5 pts (roughly half a correct answer lost per mistake)
 // At ~12 pts average per correct answer, each 500-pt tier gap takes ~40 correct answers.
 function calculateScore(timeInSeconds, isCorrect) {
-    if (!isCorrect) return -5;
+    if (!isCorrect) return -20;
 
-    const basePoints = 10;
-    const speedBonus = Math.max(0, Math.floor(10 - timeInSeconds));
+    const basePoints = 100;
+    const speedBonus = Math.max(0, Math.floor(100 * (ANSWER_TIME_LIMIT - timeInSeconds) / ANSWER_TIME_LIMIT));
     return basePoints + speedBonus;
 }
 

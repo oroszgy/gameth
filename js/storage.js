@@ -44,6 +44,11 @@ function normaliseUser(playerName) {
     return (playerName && playerName.trim()) || 'Névtelen';
 }
 
+// Helper: normalise a player name for use as a storage key
+function normaliseUser(playerName) {
+    return (playerName && playerName.trim()) || 'Névtelen';
+}
+
 // Get leaderboard from localStorage
 function getLeaderboard() {
     const data = localStorage.getItem(STORAGE_KEY);
