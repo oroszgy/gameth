@@ -67,7 +67,11 @@ const ENCOURAGEMENT_MESSAGES = [
     'Gyorsabb vagy, mint egy friss reggeli tojás! 🍳⚡',
     'Így kell ezt! A tojások büszkék rád! 🥚🎖️',
     'Krakk! Megrepesztette a feladatot! 💥🥚',
-    'Annyira okos vagy, hogy tojást is tudsz kotlani! 🐔🧠'
+    'Annyira okos vagy, hogy tojást is tudsz kotlani! 🐔🧠',
+    'Tojás-tikus vagy! 🐣🔥',
+    'Ez nem volt tyúklépés, ez óriásugrás! 🐔🚀',
+    'A héjad fényesedik az okosságtól! ✨🥚',
+    'Villámgyors tojásész! ⚡🥚'
 ];
 
 // Error messages for wrong answers
@@ -98,7 +102,9 @@ const ERROR_MESSAGES = [
     'Minden okos tojás így kezdte! 🐣',
     'Repedés nélkül nem kel ki a tudás! 🥚💡',
     'A nagy tojások is így tanultak! 🐔📖',
-    'Szusszanj, és vágj bele újra! 😤🥚'
+    'Szusszanj, és vágj bele újra! 😤🥚',
+    'Ejj, ez majdnem kilyukasztotta a héjamat! 🥚😬',
+    'Ettől még a sárgájám is beleremegett! 🍳😱'
 ];
 
 // Get random encouragement message
@@ -124,3 +130,25 @@ function calculateScore(timeInSeconds, isCorrect) {
 function formatTime(seconds) {
     return seconds.toFixed(1);
 }
+
+// Boss enemies for boss battle mode
+const BOSS_ENEMIES = [
+    {
+        id: 'giraffe',
+        name: 'Zavaros Zsiráf',
+        emoji: '🦒',
+        description: 'A hosszú nyakú számzavaró! Csak 10 hibátlan válasszal győzhető le!'
+    },
+    {
+        id: 'mummy',
+        name: 'Matek Múmia',
+        emoji: '🧟',
+        description: 'Az ősrégi számpörgető! Kevered össze a számait!'
+    },
+    {
+        id: 'dragon',
+        name: 'Számtani Sárkány',
+        emoji: '🐉',
+        description: 'Lángok helyett számokat köpköd! Állítsd meg!'
+    }
+];

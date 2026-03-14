@@ -3,6 +3,25 @@
 const STORAGE_KEY = 'mathGameLeaderboard';
 const STATS_KEY = 'mathGameStats';
 const TASK_STATS_KEY = 'mathGameTaskStats';
+const LAST_PRACTICE_KEY = 'mathGameLastPractice';
+
+// Get the timestamp (ms) of the last practice session, or null if never
+function getLastPracticeTimestamp() {
+    const val = localStorage.getItem(LAST_PRACTICE_KEY);
+    return val ? parseInt(val, 10) : null;
+}
+
+// Record the current time as the last practice timestamp
+function setLastPracticeTimestamp() {
+    localStorage.setItem(LAST_PRACTICE_KEY, Date.now().toString());
+}
+
+// Return whole days since last practice, or null if no practice recorded
+function getDaysSinceLastPractice() {
+    const last = getLastPracticeTimestamp();
+    if (last === null) return null;
+    return Math.floor((Date.now() - last) / (1000 * 60 * 60 * 24));
+}
 
 // Get leaderboard from localStorage
 function getLeaderboard() {
@@ -95,6 +114,8 @@ function updateStatistics(newScore, gameType) {
         stats[gameType].bestScore = Math.max(stats[gameType].bestScore, newScore);
     }
     
+    setLastPracticeTimestamp();
+
     try {
         localStorage.setItem(STATS_KEY, JSON.stringify(stats));
     } catch (e) {
@@ -174,6 +195,7 @@ function clearAllData() {
         localStorage.removeItem(STORAGE_KEY);
         localStorage.removeItem(STATS_KEY);
         localStorage.removeItem(TASK_STATS_KEY);
+        localStorage.removeItem(LAST_PRACTICE_KEY);
         alert('Az összes adat törölve!');
         location.reload();
     }

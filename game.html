@@ -10,12 +10,22 @@
     <div class="container game-container">
         <!-- Game Header -->
         <div class="game-header">
-            <div class="progress">
+            <div class="progress" id="progressDisplay">
                 <span id="questionNumber">1</span> / <span id="totalQuestions">20</span>
             </div>
             <div class="score">
                 Pontok: <span id="score">0</span>
             </div>
+        </div>
+
+        <!-- Boss Battle Section (hidden in normal mode) -->
+        <div class="boss-section" id="bossSection" style="display:none">
+            <div class="boss-display">
+                <span class="boss-emoji" id="bossEmoji">🦒</span>
+                <span class="boss-name" id="bossName">Zavaros Zsiráf</span>
+            </div>
+            <div class="boss-hp-hearts" id="bossHpHearts">❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️</div>
+            <div class="boss-streak" id="bossStreak">0/10 egymás utáni helyes</div>
         </div>
 
         <!-- Question Display -->
@@ -46,6 +56,9 @@
         <div id="resultModal" class="modal">
             <div class="modal-content result-content">
                 <h2>🎉 Játék Vége! 🎉</h2>
+
+                <!-- Boss battle result banner -->
+                <div id="bossBanner" class="boss-banner" style="display:none"></div>
                 
                 <div class="result-stats">
                     <div class="stat">
@@ -82,6 +95,7 @@
 
     <script src="js/config.js"></script>
     <script src="js/storage.js"></script>
+    <script src="js/mascot.js"></script>
     <script src="js/game.js"></script>
 </body>
 </html>

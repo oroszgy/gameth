@@ -13,6 +13,12 @@ let startTime = null;
 let timerInterval = null;
 let questions = [];
 
+// Boss battle state
+let bossHP = 10;
+let consecutiveCorrect = 0;
+let totalAttempts = 0;
+const BOSS_MAX_ATTEMPTS = 60;
+
 // Initialize game
 function initGame() {
     // Load game configuration
@@ -30,15 +36,41 @@ function initGame() {
         window.location.href = 'index.html';
         return;
     }
-    
-    // Generate all questions
-    questions = generateQuestions(gameConfig.numQuestions);
-    
-    // Update UI
-    document.getElementById('totalQuestions').textContent = gameConfig.numQuestions;
+
+    if (gameConfig.mode === 'boss') {
+        initBossMode();
+    } else {
+        // Generate all questions
+        questions = generateQuestions(gameConfig.numQuestions);
+        document.getElementById('totalQuestions').textContent = gameConfig.numQuestions;
+    }
     
     // Start first question
     nextQuestion();
+}
+
+// Set up the boss battle UI
+function initBossMode() {
+    const boss = BOSS_ENEMIES.find(b => b.id === gameConfig.bossId) || BOSS_ENEMIES[0];
+    bossHP = 10;
+    consecutiveCorrect = 0;
+    totalAttempts = 0;
+
+    const bossSection = document.getElementById('bossSection');
+    if (bossSection) {
+        bossSection.style.display = '';
+        document.getElementById('bossEmoji').textContent = boss.emoji;
+        document.getElementById('bossName').textContent = boss.name;
+        updateBossHP();
+    }
+
+    // Hide normal progress display; show boss progress instead
+    const progressEl = document.getElementById('progressDisplay');
+    if (progressEl) progressEl.style.display = 'none';
+
+    // Pre-generate a buffer of questions; we'll add more on demand
+    questions = generateQuestions(BOSS_MAX_ATTEMPTS);
+    document.getElementById('totalQuestions').textContent = '?';
 }
 
 // Generate all questions for the game
@@ -209,8 +241,14 @@ function nextQuestion() {
     // Clear answer input
     document.getElementById('answer').value = '';
     document.getElementById('answer').focus();
-    
-    if (currentQuestion >= questions.length) {
+
+    if (gameConfig.mode === 'boss') {
+        // Boss mode: end when max attempts reached (boss escaped)
+        if (totalAttempts >= BOSS_MAX_ATTEMPTS) {
+            endGame();
+            return;
+        }
+    } else if (currentQuestion >= questions.length) {
         endGame();
         return;
     }
@@ -286,12 +324,43 @@ function submitAnswer() {
 
     // Track task result for adaptive question selection
     updateTaskResult(getTaskKey(question), isCorrect);
+
+    // Boss mode: update HP and check win/reset
+    if (gameConfig.mode === 'boss') {
+        totalAttempts++;
+        if (isCorrect) {
+            consecutiveCorrect++;
+            bossHP = Math.max(0, 10 - consecutiveCorrect);
+            updateBossHP();
+            if (consecutiveCorrect >= 10) {
+                currentQuestion++;
+                setTimeout(() => endGame(), 2000);
+                return;
+            }
+        } else {
+            consecutiveCorrect = 0;
+            bossHP = 10;
+            updateBossHP();
+        }
+    }
     
     // Move to next question after delay
     currentQuestion++;
     setTimeout(() => {
         nextQuestion();
     }, 2000);
+}
+
+// Update the boss HP hearts display
+function updateBossHP() {
+    const hpEl = document.getElementById('bossHpHearts');
+    const streakEl = document.getElementById('bossStreak');
+    if (hpEl) {
+        hpEl.textContent = '❤️'.repeat(bossHP) + '🖤'.repeat(10 - bossHP);
+    }
+    if (streakEl) {
+        streakEl.textContent = `${consecutiveCorrect}/10 egymás utáni helyes`;
+    }
 }
 
 // Handle Enter key press
@@ -310,13 +379,28 @@ document.addEventListener('DOMContentLoaded', () => {
 function endGame() {
     stopTimer();
     
-    const accuracy = Math.round((correctAnswers / questions.length) * 100);
+    const totalAnswered = gameConfig.mode === 'boss' ? totalAttempts : questions.length;
+    const accuracy = totalAnswered > 0 ? Math.round((correctAnswers / totalAnswered) * 100) : 0;
     
     // Display results
     document.getElementById('finalScore').textContent = score;
-    document.getElementById('correctAnswers').textContent = `${correctAnswers} / ${questions.length}`;
+    document.getElementById('correctAnswers').textContent = `${correctAnswers} / ${totalAnswered}`;
     document.getElementById('accuracy').textContent = `${accuracy}%`;
     
+    // Boss mode: show victory or defeat banner
+    const bossBanner = document.getElementById('bossBanner');
+    if (gameConfig.mode === 'boss' && bossBanner) {
+        const boss = BOSS_ENEMIES.find(b => b.id === gameConfig.bossId) || BOSS_ENEMIES[0];
+        if (consecutiveCorrect >= 10) {
+            bossBanner.textContent = `🎉 Legyőzted a(z) ${boss.emoji} ${boss.name}-t! Tojáshős vagy! 🏆`;
+            bossBanner.className = 'boss-banner boss-victory';
+        } else {
+            bossBanner.textContent = `${boss.emoji} ${boss.name} elmenekült... de majd legközelebb! 💪`;
+            bossBanner.className = 'boss-banner boss-defeat';
+        }
+        bossBanner.style.display = '';
+    }
+
     // Check for new hero title
     const oldStats = getPlayerStats();
     const newHeroTitle = checkNewHeroTitle(oldStats.totalPoints, oldStats.totalPoints + score);
@@ -360,12 +444,24 @@ function playAgain() {
     currentQuestion = 0;
     score = 0;
     correctAnswers = 0;
+    bossHP = 10;
+    consecutiveCorrect = 0;
+    totalAttempts = 0;
     
     // Update score display
     document.getElementById('score').textContent = score;
+
+    // Hide boss banner
+    const bossBanner = document.getElementById('bossBanner');
+    if (bossBanner) bossBanner.style.display = 'none';
     
-    // Generate new questions
-    questions = generateQuestions(gameConfig.numQuestions);
+    // Re-initialize based on mode
+    if (gameConfig.mode === 'boss') {
+        initBossMode();
+    } else {
+        // Generate new questions
+        questions = generateQuestions(gameConfig.numQuestions);
+    }
     
     // Hide modal
     document.getElementById('resultModal').style.display = 'none';

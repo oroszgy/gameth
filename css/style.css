@@ -738,3 +738,222 @@ body {
         flex-direction: column;
     }
 }
+
+/* ===== Mascot ===== */
+
+.mascot-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.mascot-container {
+    width: 120px;
+    height: 156px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mascot-svg {
+    width: 120px;
+    height: 156px;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15));
+    animation: mascotBob 3s ease-in-out infinite;
+}
+
+@keyframes mascotBob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+}
+
+/* Hide all accessories by default */
+.mascot-acc { display: none; }
+
+/* Tier 1: sprout only */
+.mascot-tier-1 .mascot-sprout { display: block; }
+
+/* Tier 2: crack + sprout */
+.mascot-tier-2 .mascot-crack,
+.mascot-tier-2 .mascot-sprout { display: block; }
+
+/* Tier 3: eyes + smile + cheeks */
+.mascot-tier-3 .mascot-eyes,
+.mascot-tier-3 .mascot-smile,
+.mascot-tier-3 .mascot-cheeks { display: block; }
+
+/* Tier 4: eyes + smile + cheeks + sunglasses */
+.mascot-tier-4 .mascot-eyes,
+.mascot-tier-4 .mascot-smile,
+.mascot-tier-4 .mascot-cheeks,
+.mascot-tier-4 .mascot-sunglasses { display: block; }
+
+/* Tier 5-6: eyes + smile + cheeks + viking helmet */
+.mascot-tier-5 .mascot-eyes,
+.mascot-tier-5 .mascot-smile,
+.mascot-tier-5 .mascot-cheeks,
+.mascot-tier-5 .mascot-viking { display: block; }
+
+.mascot-tier-6 .mascot-eyes,
+.mascot-tier-6 .mascot-smile,
+.mascot-tier-6 .mascot-cheeks,
+.mascot-tier-6 .mascot-viking { display: block; }
+
+/* Tier 7-8: eyes + smile + cheeks + skater cap */
+.mascot-tier-7 .mascot-eyes,
+.mascot-tier-7 .mascot-smile,
+.mascot-tier-7 .mascot-cheeks,
+.mascot-tier-7 .mascot-skater { display: block; }
+
+.mascot-tier-8 .mascot-eyes,
+.mascot-tier-8 .mascot-smile,
+.mascot-tier-8 .mascot-cheeks,
+.mascot-tier-8 .mascot-skater { display: block; }
+
+/* Tier 9: eyes + smile + cheeks + crown */
+.mascot-tier-9 .mascot-eyes,
+.mascot-tier-9 .mascot-smile,
+.mascot-tier-9 .mascot-cheeks,
+.mascot-tier-9 .mascot-crown { display: block; }
+
+.mascot-regression-msg {
+    font-size: 0.9em;
+    color: #e53935;
+    font-weight: bold;
+    text-align: center;
+    max-width: 280px;
+    margin-top: 6px;
+    animation: pulse 2s infinite;
+}
+
+/* ===== Boss Battle Button ===== */
+.boss-btn {
+    background: linear-gradient(135deg, #FF6B35 0%, #C62828 100%) !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.boss-btn:hover {
+    background: linear-gradient(135deg, #E64A19 0%, #B71C1C 100%) !important;
+}
+
+/* ===== Boss Modal ===== */
+.boss-modal-desc {
+    text-align: center;
+    color: #555;
+    margin-bottom: 20px;
+    font-size: 1em;
+    line-height: 1.5;
+}
+
+.boss-selection {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.boss-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 14px 16px;
+    border: 3px solid #ddd;
+    border-radius: 15px;
+    cursor: pointer;
+    background: white;
+    transition: all 0.25s ease;
+    min-width: 90px;
+}
+
+.boss-card:hover {
+    border-color: #FF6B35;
+    transform: scale(1.05);
+}
+
+.boss-card.selected {
+    border-color: #C62828;
+    background: rgba(198, 40, 40, 0.08);
+    transform: scale(1.08);
+}
+
+.boss-card-emoji {
+    font-size: 2.2em;
+    display: block;
+    margin-bottom: 6px;
+}
+
+.boss-card-name {
+    font-size: 0.85em;
+    font-weight: bold;
+    text-align: center;
+    color: #333;
+}
+
+/* ===== Boss Battle Game UI ===== */
+.boss-section {
+    background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+    border: 3px solid #FF6B35;
+    border-radius: 18px;
+    padding: 14px 20px;
+    margin-bottom: 20px;
+    text-align: center;
+    animation: slideIn 0.4s ease;
+}
+
+.boss-display {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.boss-emoji {
+    font-size: 2.8em;
+    animation: mascotBob 2s ease-in-out infinite;
+}
+
+.boss-name {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #C62828;
+}
+
+.boss-hp-hearts {
+    font-size: 1.6em;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+}
+
+.boss-streak {
+    font-size: 1em;
+    font-weight: bold;
+    color: #555;
+}
+
+/* Boss battle result banners */
+.boss-banner {
+    text-align: center;
+    font-size: 1.3em;
+    font-weight: bold;
+    padding: 14px 20px;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    animation: pulse 2s infinite;
+}
+
+.boss-victory {
+    background: rgba(76, 175, 80, 0.15);
+    border: 2px solid #4CAF50;
+    color: #2E7D32;
+}
+
+.boss-defeat {
+    background: rgba(239, 68, 68, 0.12);
+    border: 2px solid #ef4444;
+    color: #b91c1c;
+}
+
