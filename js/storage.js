@@ -8,7 +8,19 @@ const LAST_PRACTICE_KEY = 'mathGameLastPractice';
 // Get the timestamp (ms) of the last practice session, or null if never
 function getLastPracticeTimestamp() {
     const val = localStorage.getItem(LAST_PRACTICE_KEY);
-    return val ? parseInt(val, 10) : null;
+    if (!val) {
+        return null;
+    }
+
+    const parsed = parseInt(val, 10);
+
+    if (!Number.isFinite(parsed)) {
+        // Stored value is corrupted or invalid; clear it and treat as no practice
+        localStorage.removeItem(LAST_PRACTICE_KEY);
+        return null;
+    }
+
+    return parsed;
 }
 
 // Record the current time as the last practice timestamp
