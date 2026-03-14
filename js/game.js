@@ -68,7 +68,7 @@ function initBossMode() {
     const progressEl = document.getElementById('progressDisplay');
     if (progressEl) progressEl.style.display = 'none';
 
-    // Pre-generate a buffer of questions; we'll add more on demand
+    // Pre-generate a fixed buffer of boss questions
     questions = generateQuestions(BOSS_MAX_ATTEMPTS);
     document.getElementById('totalQuestions').textContent = '?';
 }
