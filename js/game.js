@@ -128,7 +128,7 @@ function weightedRandom(items) {
 // Generate multiplication/division question with weighted selection
 function generateMultiplyQuestion() {
     const maxBase = gameConfig.config;
-    const taskStats = getTaskStats();
+    const taskStats = getTaskStats(gameConfig.playerName);
 
     // Build a weighted list of candidate (base, multiplier) pairs.
     // When includeLowerNumbers is set, all bases from 2..maxBase are included;
@@ -173,7 +173,7 @@ function generateMultiplyQuestion() {
 // Generate addition/subtraction question with weighted selection for known failing tasks
 function generateAddQuestion() {
     const limit = gameConfig.config;
-    const taskStats = getTaskStats();
+    const taskStats = getTaskStats(gameConfig.playerName);
 
     // Collect previously-failed tasks for this limit
     const failedTasks = [];
@@ -239,8 +239,15 @@ function nextQuestion() {
     document.getElementById('feedback').className = 'feedback';
     
     // Clear answer input
-    document.getElementById('answer').value = '';
-    document.getElementById('answer').focus();
+    const answerInput = document.getElementById('answer');
+    answerInput.value = '';
+
+    // Only auto-focus the input when the numpad is hidden so that
+    // the native virtual keyboard does not pop up on touch devices
+    // while the custom numpad is in use.
+    if (document.getElementById('numpad').style.display !== 'block') {
+        answerInput.focus();
+    }
 
     if (gameConfig.mode === 'boss') {
         // Boss mode: end when max attempts reached (boss escaped)
@@ -323,7 +330,7 @@ function submitAnswer() {
     }
 
     // Track task result for adaptive question selection
-    updateTaskResult(getTaskKey(question), isCorrect);
+    updateTaskResult(getTaskKey(question), isCorrect, gameConfig.playerName);
 
     // Boss mode: update HP and check win/reset
     if (gameConfig.mode === 'boss') {
@@ -373,7 +380,53 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // Restore numpad preference
+    const numpad = document.getElementById('numpad');
+    const toggleBtn = document.getElementById('numpadToggle');
+    if (numpad && toggleBtn) {
+        const showNumpad = localStorage.getItem('showNumpad') === '1';
+        numpad.style.display = showNumpad ? 'block' : 'none';
+        toggleBtn.classList.toggle('active', showNumpad);
+        if (answerInput && showNumpad) {
+            answerInput.setAttribute('inputmode', 'none');
+        }
+    }
 });
+
+// Toggle the on-screen numeric keypad
+function toggleNumpad() {
+    const numpad = document.getElementById('numpad');
+    const toggleBtn = document.getElementById('numpadToggle');
+    const answerInput = document.getElementById('answer');
+    const isVisible = numpad.style.display !== 'none';
+
+    numpad.style.display = isVisible ? 'none' : 'block';
+    toggleBtn.classList.toggle('active', !isVisible);
+
+    // Suppress the native virtual keyboard when the custom numpad is shown
+    if (!isVisible) {
+        answerInput.setAttribute('inputmode', 'none');
+        answerInput.blur();
+    } else {
+        answerInput.removeAttribute('inputmode');
+        answerInput.focus();
+    }
+
+    localStorage.setItem('showNumpad', !isVisible ? '1' : '0');
+}
+
+// Append a digit via the on-screen numpad
+function numpadPress(digit) {
+    const answerInput = document.getElementById('answer');
+    answerInput.value += digit;
+}
+
+// Delete the last character via the on-screen numpad
+function numpadBackspace() {
+    const answerInput = document.getElementById('answer');
+    answerInput.value = answerInput.value.slice(0, -1);
+}
 
 // End game and show results
 function endGame() {
@@ -402,15 +455,15 @@ function endGame() {
     }
 
     // Check for new hero title
-    const oldStats = getPlayerStats();
+    const oldStats = getPlayerStats(gameConfig.playerName);
     const newHeroTitle = checkNewHeroTitle(oldStats.totalPoints, oldStats.totalPoints + score);
     
     if (newHeroTitle) {
         document.getElementById('newHeroTitle').textContent = `🎉 Új cím feloldva: ${newHeroTitle}! 🎉`;
     }
     
-    // Load saved player name if available
-    const savedName = localStorage.getItem('playerName') || '';
+    // Pre-fill player name from game config (set before game started)
+    const savedName = gameConfig.playerName || localStorage.getItem('playerName') || '';
     document.getElementById('playerName').value = savedName;
     
     // Show result modal
