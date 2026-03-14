@@ -25,7 +25,11 @@ function getLastPracticeTimestamp() {
 
 // Record the current time as the last practice timestamp
 function setLastPracticeTimestamp() {
-    localStorage.setItem(LAST_PRACTICE_KEY, Date.now().toString());
+    try {
+        localStorage.setItem(LAST_PRACTICE_KEY, Date.now().toString());
+    } catch (e) {
+        console.error('Error saving last practice timestamp:', e);
+    }
 }
 
 // Return whole days since last practice, or null if no practice recorded
