@@ -1,4 +1,4 @@
-# 🎮 Matek Játék - Math Game for 2nd Graders
+# 🥚 OkosTojás - Math Game for 2nd Graders
 
 A fun, gamified math practice webapp for Hungarian 2nd grade students. Practice multiplication, division, addition, and subtraction with a kid-friendly interface!
 
@@ -21,7 +21,7 @@ A fun, gamified math practice webapp for Hungarian 2nd grade students. Practice 
 
 - **Progress Tracking:**
   - Local leaderboard with player names
-  - Hero titles to unlock (from "Kezdő Matematikus" to "Matek Varázsló")
+  - Hero titles to unlock (from "Tojáscsíra 🌱" to "A Nagy Tojás 👑")
   - Statistics tracking (total games, points, best score)
 
 - **Mobile-Friendly:**
@@ -47,11 +47,15 @@ A fun, gamified math practice webapp for Hungarian 2nd grade students. Practice 
 ## 🏆 Hero Titles
 
 Unlock these titles as you collect points:
-- 100 points: Kezdő Matematikus (Beginner Mathematician)
-- 500 points: Számok Barátja (Friend of Numbers)
-- 1000 points: Matek Bajnok (Math Champion)
-- 2000 points: Számolásmester (Master Calculator)
-- 5000 points: Matek Varázsló (Math Wizard)
+- 100 points: Tojáscsíra 🌱 (Egg Sprout)
+- 300 points: Repedező Tojás 🥚 (Cracking Egg)
+- 600 points: Frissen Kelt Számolós 🐣 (Freshly Hatched Counter)
+- 1000 points: Okos Tojás 🧠 (Smart Egg)
+- 2000 points: Számolásmester 🔢 (Master Calculator)
+- 3500 points: Tojászseni 💡 (Egg Genius)
+- 5000 points: Tojásvarázsló 🪄 (Egg Wizard)
+- 8000 points: Aranytojás 🥇 (Golden Egg)
+- 12000 points: A Nagy Tojás 👑 (The Big Egg)
 
 ## 🛠️ Technical Details
 
