@@ -478,13 +478,15 @@ function saveAndReturn() {
         localStorage.setItem('playerName', playerName);
     }
     
-    // Save score to leaderboard
+    // Save score to leaderboard; in boss mode use totalAttempts so accuracy is
+    // computed from actual attempts, not the pre-generated question buffer (60).
+    const totalAnswered = gameConfig.mode === 'boss' ? totalAttempts : questions.length;
     saveScore(
         playerName,
         score,
         gameConfig.type,
         correctAnswers,
-        questions.length
+        totalAnswered
     );
     
     // Return to main menu
