@@ -22,12 +22,12 @@ body {
 
 .theme-girl .btn-primary,
 .theme-girl .game-btn {
-    background: linear-gradient(135deg, #ff6b9d 0%, #c239b3 100%);
+    background: linear-gradient(135deg, #FFADFF 0%, #c239b3 100%);
 }
 
 .theme-girl .btn-primary:hover,
 .theme-girl .game-btn:hover {
-    background: linear-gradient(135deg, #ff5a8f 0%, #b030a0 100%);
+    background: linear-gradient(135deg, #e89ce8 0%, #b030a0 100%);
     transform: scale(1.05);
 }
 
@@ -35,11 +35,11 @@ body {
 .theme-girl .stat-card,
 .theme-girl .leaderboard-table {
     background: linear-gradient(135deg, #ffe8f0 0%, #ffd4e5 100%);
-    border: 3px solid #ff6b9d;
+    border: 3px solid #FFADFF;
 }
 
 .theme-girl .theme-btn[data-theme="girl"] {
-    background: linear-gradient(135deg, #ff6b9d 0%, #c239b3 100%);
+    background: linear-gradient(135deg, #FFADFF 0%, #c239b3 100%);
     color: white;
     transform: scale(1.1);
 }
