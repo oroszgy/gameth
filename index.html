@@ -18,9 +18,11 @@
             <label for="userSelect">👤 Játékos:</label>
             <div class="user-input-row">
                 <select id="userSelect" class="config-select"></select>
-                <input type="text" id="newPlayerInput" class="config-select"
-                       placeholder="Írd be az új játékos nevét..." maxlength="30"
-                       style="display:none">
+            </div>
+            <div class="new-player-row" id="newPlayerRow" style="display:none">
+                <input type="text" id="newPlayerInput" class="config-select new-player-input"
+                       placeholder="Írd be az új játékos nevét..." maxlength="30">
+                <button type="button" class="btn-add-player" id="addPlayerBtn">✔ Hozzáad</button>
             </div>
         </div>
 
@@ -152,8 +154,13 @@
             const savedName = localStorage.getItem('playerName') || '';
             const users = getAllUsers();
 
+            // Include the saved player name even if they haven't played a game yet
+            const allUsers = (savedName && !users.includes(savedName))
+                ? [...users, savedName].sort((a, b) => a.localeCompare(b))
+                : users;
+
             select.innerHTML = '';
-            users.forEach(user => {
+            allUsers.forEach(user => {
                 const opt = document.createElement('option');
                 opt.value = user;
                 opt.textContent = user;
@@ -167,35 +174,47 @@
             select.appendChild(newOpt);
 
             // Pre-select current player or fall back to new-player row
-            if (savedName && users.includes(savedName)) {
+            if (savedName && allUsers.includes(savedName)) {
                 select.value = savedName;
             } else {
                 select.value = NEW_PLAYER_VALUE;
-                if (savedName) {
-                    document.getElementById('newPlayerInput').value = savedName;
-                }
             }
             updateNewPlayerInputVisibility();
         }
 
         function updateNewPlayerInputVisibility() {
             const select = document.getElementById('userSelect');
+            const newPlayerRow = document.getElementById('newPlayerRow');
             const newPlayerInput = document.getElementById('newPlayerInput');
             if (select.value === NEW_PLAYER_VALUE) {
-                newPlayerInput.style.display = '';
+                newPlayerRow.style.display = '';
+                newPlayerInput.focus();
             } else {
-                newPlayerInput.style.display = 'none';
+                newPlayerRow.style.display = 'none';
+                newPlayerInput.value = '';
             }
         }
 
         // Return the currently selected player name
         function getCurrentPlayerName() {
             const select = document.getElementById('userSelect');
-            const newInput = document.getElementById('newPlayerInput');
-            if (select && select.value === NEW_PLAYER_VALUE) {
-                return (newInput && newInput.value && newInput.value.trim()) || 'Névtelen';
+            if (select && select.value !== NEW_PLAYER_VALUE) {
+                return select.value || 'Névtelen';
             }
-            return (select && select.value) || 'Névtelen';
+            return 'Névtelen';
+        }
+
+        // Add the new player from the input field and select them
+        function addNewPlayer() {
+            const input = document.getElementById('newPlayerInput');
+            const name = (input.value || '').trim();
+            if (!name) {
+                input.focus();
+                return;
+            }
+            localStorage.setItem('playerName', name);
+            populateUserSelect();
+            updatePlayerDisplay(name);
         }
 
         // Update the hero title, mascot and regression message for the given player
@@ -219,19 +238,16 @@
 
         document.getElementById('userSelect').addEventListener('change', function() {
             updateNewPlayerInputVisibility();
-            if (this.value === NEW_PLAYER_VALUE) {
-                document.getElementById('newPlayerInput').focus();
-            } else {
+            if (this.value !== NEW_PLAYER_VALUE) {
                 localStorage.setItem('playerName', this.value);
                 updatePlayerDisplay(this.value);
             }
         });
 
-        document.getElementById('newPlayerInput').addEventListener('change', function() {
-            const name = (this.value && this.value.trim()) || 'Névtelen';
-            localStorage.setItem('playerName', name);
-            updatePlayerDisplay(name);
-            populateUserSelect();
+        document.getElementById('addPlayerBtn').addEventListener('click', addNewPlayer);
+
+        document.getElementById('newPlayerInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') addNewPlayer();
         });
 
         function selectGame(gameType) {

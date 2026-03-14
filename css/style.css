@@ -145,6 +145,56 @@ body {
     text-align: center;
 }
 
+.new-player-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+
+.new-player-row .new-player-input {
+    max-width: 240px;
+    text-align: left;
+}
+
+.btn-add-player {
+    padding: 14px 22px;
+    font-size: 1.05em;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%);
+    color: white;
+    font-weight: bold;
+    transition: all 0.2s ease;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+    font-family: inherit;
+    white-space: nowrap;
+}
+
+.btn-add-player:hover {
+    background: linear-gradient(135deg, #43A047 0%, #2E7D32 100%);
+    transform: scale(1.05);
+}
+
+.theme-girl .btn-add-player {
+    background: linear-gradient(135deg, #FFADFF 0%, #c239b3 100%);
+}
+
+.theme-girl .btn-add-player:hover {
+    background: linear-gradient(135deg, #e89ce8 0%, #b030a0 100%);
+}
+
+.theme-boy .btn-add-player {
+    background: linear-gradient(135deg, #4a90e2 0%, #2c5aa0 100%);
+}
+
+.theme-boy .btn-add-player:hover {
+    background: linear-gradient(135deg, #3a7fd0 0%, #1c4a90 100%);
+}
+
 /* Theme Selector */
 .theme-selector {
     display: flex;
@@ -342,6 +392,7 @@ body {
 /* Game Container */
 .game-container {
     max-width: 600px;
+    overflow-y: auto;
 }
 
 .game-header {
@@ -390,6 +441,11 @@ body {
     display: flex;
     gap: 15px;
     margin: 30px 0;
+}
+
+.answer-container .btn-primary {
+    white-space: nowrap;
+    flex: 0 0 auto;
 }
 
 .answer-input {
@@ -796,17 +852,10 @@ body {
 }
 
 /* Mobile */
-@media (max-width: 480px) {
-    .date-inputs {
-        flex-direction: column;
-        gap: 10px;
-    }
-}
-
-
 @media (max-width: 768px) {
     body {
         padding: 10px;
+        align-items: flex-start;
     }
 
     .container {
@@ -856,9 +905,55 @@ body {
         padding: 10px;
         font-size: 0.9em;
     }
+
+    .game-container {
+        padding: 15px;
+        border-radius: 16px;
+    }
+
+    .game-header {
+        font-size: 1.2em;
+        margin-bottom: 15px;
+    }
+
+    .question-container {
+        margin: 20px 0;
+    }
+
+    .answer-container {
+        margin: 15px 0;
+        gap: 10px;
+    }
+
+    .answer-input {
+        padding: 14px;
+        font-size: 1.4em;
+    }
+
+    .btn-primary {
+        padding: 12px 18px;
+        font-size: 1.1em;
+    }
+
+    .numpad {
+        max-width: 100%;
+    }
+
+    .numpad-grid {
+        gap: 8px;
+    }
+
+    .numpad-btn {
+        padding: 14px 8px;
+        font-size: 1.5em;
+    }
 }
 
 @media (max-width: 480px) {
+    body {
+        padding: 8px;
+    }
+
     .header h1 {
         font-size: 1.5em;
     }
@@ -873,6 +968,111 @@ body {
 
     .filter-buttons {
         flex-direction: column;
+    }
+
+    .date-inputs {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .game-container {
+        padding: 12px;
+        border-radius: 14px;
+    }
+
+    .game-header {
+        font-size: 1em;
+        margin-bottom: 10px;
+    }
+
+    .question-container {
+        margin: 12px 0;
+    }
+
+    .question {
+        font-size: 1.8em;
+        margin-bottom: 10px;
+    }
+
+    .question span {
+        margin: 0 6px;
+    }
+
+    .timer {
+        font-size: 1.1em;
+    }
+
+    .answer-container {
+        margin: 10px 0;
+        gap: 8px;
+    }
+
+    .answer-input {
+        padding: 10px;
+        font-size: 1.2em;
+        border-radius: 10px;
+    }
+
+    .btn-primary {
+        padding: 10px 14px;
+        font-size: 1em;
+        border-radius: 10px;
+    }
+
+    .numpad-toggle-row {
+        margin: 4px 0 6px;
+    }
+
+    .numpad-toggle-btn {
+        padding: 8px 16px;
+        font-size: 0.9em;
+    }
+
+    .numpad {
+        max-width: 100%;
+        margin: 6px auto 4px;
+    }
+
+    .numpad-grid {
+        gap: 6px;
+    }
+
+    .numpad-btn {
+        padding: 12px 4px;
+        font-size: 1.3em;
+        border-radius: 10px;
+        border-width: 2px;
+    }
+
+    .feedback {
+        font-size: 1.4em;
+        min-height: 40px;
+    }
+
+    .boss-section {
+        padding: 10px 12px;
+        margin-bottom: 12px;
+    }
+
+    .boss-emoji {
+        font-size: 2em;
+    }
+
+    .boss-name {
+        font-size: 1.1em;
+    }
+
+    .boss-hp-hearts {
+        font-size: 1.2em;
+    }
+
+    .new-player-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .new-player-row .new-player-input {
+        max-width: 100%;
     }
 }
 
