@@ -1,17 +1,18 @@
 // Configuration and utility functions
 
 // Hero titles based on total points
+// Evenly spaced at 500-pt intervals so each tier requires ~40 correct answers
 const HERO_TITLES = [
     { points: 0, title: null },
-    { points: 100, title: 'Tojáscsíra 🌱' },
-    { points: 300, title: 'Repedező Tojás 🥚' },
-    { points: 600, title: 'Frissen Kelt Számolós 🐣' },
-    { points: 1000, title: 'Okos Tojás 🧠' },
-    { points: 2000, title: 'Számolásmester 🔢' },
-    { points: 3500, title: 'Tojászseni 💡' },
-    { points: 5000, title: 'Tojásvarázsló 🪄' },
-    { points: 8000, title: 'Aranytojás 🥇' },
-    { points: 12000, title: 'A Nagy Tojás 👑' }
+    { points: 500, title: 'Tojáscsíra 🌱' },
+    { points: 1000, title: 'Repedező Tojás 🥚' },
+    { points: 1500, title: 'Frissen Kelt Számolós 🐣' },
+    { points: 2000, title: 'Okos Tojás 🧠' },
+    { points: 2500, title: 'Számolásmester 🔢' },
+    { points: 3000, title: 'Tojászseni 💡' },
+    { points: 3500, title: 'Tojásvarázsló 🪄' },
+    { points: 4000, title: 'Aranytojás 🥇' },
+    { points: 4500, title: 'A Nagy Tojás 👑' }
 ];
 
 // Get hero title based on points
@@ -67,7 +68,11 @@ const ENCOURAGEMENT_MESSAGES = [
     'Gyorsabb vagy, mint egy friss reggeli tojás! 🍳⚡',
     'Így kell ezt! A tojások büszkék rád! 🥚🎖️',
     'Krakk! Megrepesztette a feladatot! 💥🥚',
-    'Annyira okos vagy, hogy tojást is tudsz kotlani! 🐔🧠'
+    'Annyira okos vagy, hogy tojást is tudsz kotlani! 🐔🧠',
+    'Tojás-tikus vagy! 🐣🔥',
+    'Ez nem volt tyúklépés, ez óriásugrás! 🐔🚀',
+    'A héjad fényesedik az okosságtól! ✨🥚',
+    'Villámgyors tojásész! ⚡🥚'
 ];
 
 // Error messages for wrong answers
@@ -98,7 +103,9 @@ const ERROR_MESSAGES = [
     'Minden okos tojás így kezdte! 🐣',
     'Repedés nélkül nem kel ki a tudás! 🥚💡',
     'A nagy tojások is így tanultak! 🐔📖',
-    'Szusszanj, és vágj bele újra! 😤🥚'
+    'Szusszanj, és vágj bele újra! 😤🥚',
+    'Ejj, ez majdnem kilyukasztotta a héjamat! 🥚😬',
+    'Ettől még a sárgájám is beleremegett! 🍳😱'
 ];
 
 // Get random encouragement message
@@ -115,6 +122,9 @@ function getErrorMessage() {
 const ANSWER_TIME_LIMIT = 20;
 
 // Calculate score based on time
+// Correct: 10 base pts + speed bonus (0–9 pts for answers under 10 s) → 10–19 pts
+// Wrong: -5 pts (roughly half a correct answer lost per mistake)
+// At ~12 pts average per correct answer, each 500-pt tier gap takes ~40 correct answers.
 function calculateScore(timeInSeconds, isCorrect) {
     if (!isCorrect) return -20;
 
@@ -127,3 +137,25 @@ function calculateScore(timeInSeconds, isCorrect) {
 function formatTime(seconds) {
     return seconds.toFixed(1);
 }
+
+// Boss enemies for boss battle mode
+const BOSS_ENEMIES = [
+    {
+        id: 'giraffe',
+        name: 'Zavaros Zsiráf',
+        emoji: '🦒',
+        description: 'A hosszú nyakú számzavaró! Csak 10 hibátlan válasszal győzhető le!'
+    },
+    {
+        id: 'mummy',
+        name: 'Matek Múmia',
+        emoji: '🧟',
+        description: 'Az ősrégi számpörgető! Kevered össze a számait!'
+    },
+    {
+        id: 'dragon',
+        name: 'Számtani Sárkány',
+        emoji: '🐉',
+        description: 'Lángok helyett számokat köpköd! Állítsd meg!'
+    }
+];
