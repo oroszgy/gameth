@@ -55,9 +55,9 @@
                     <label for="globalMaxValue">Számok felső határa:</label>
                     <select id="globalMaxValue" class="config-select">
                         <option value="10">legfeljebb 10</option>
-                        <option value="20" selected>legfeljebb 20</option>
+                        <option value="20">legfeljebb 20</option>
                         <option value="50">legfeljebb 50</option>
-                        <option value="100">legfeljebb 100</option>
+                        <option value="100" selected>legfeljebb 100</option>
                         <option value="200">legfeljebb 200</option>
                     </select>
                 </div>
@@ -191,7 +191,7 @@
             const maxVal = document.getElementById('globalMaxValue');
             const maxDiv = document.getElementById('globalMaxDivisor');
             const incl  = document.getElementById('globalIncludeLower');
-            maxVal.value = localStorage.getItem('globalMaxValue') || '20';
+            maxVal.value = localStorage.getItem('globalMaxValue') || '100';
             maxDiv.value = localStorage.getItem('globalMaxDivisor') || '5';
             incl.checked = localStorage.getItem('globalIncludeLower') !== '0';
             maxVal.addEventListener('change', () => localStorage.setItem('globalMaxValue', maxVal.value));
