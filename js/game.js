@@ -88,6 +88,8 @@ function generateQuestions(count) {
 function generateQuestion() {
     if (gameConfig.type === 'multiply') {
         return generateMultiplyQuestion();
+    } else if (gameConfig.type === 'precedence') {
+        return generatePrecedenceQuestion();
     } else {
         return generateAddQuestion();
     }
@@ -100,6 +102,8 @@ function getTaskKey(question) {
         const base = question.operator === '×' ? question.num1 : question.num2;
         const multiplier = question.operator === '×' ? question.num2 : question.answer;
         return `multiply:${base}:${multiplier}`;
+    } else if (gameConfig.type === 'precedence') {
+        return `precedence:${gameConfig.config}:${question.expressionKey}`;
     } else {
         const limit = gameConfig.config;
         const op = question.operator === '+' ? 'add' : 'sub';
@@ -232,6 +236,215 @@ function generateAddQuestion() {
     }
 }
 
+// Generate operator-precedence question with adaptive selection
+function generatePrecedenceQuestion() {
+    const limit = gameConfig.config;
+    const taskStats = getTaskStats(gameConfig.playerName);
+
+    // Collect previously-failed tasks for this limit
+    const failedTasks = [];
+    for (const [key, stats] of Object.entries(taskStats)) {
+        if (key.startsWith(`precedence:${limit}:`) && stats.wrong > 0) {
+            failedTasks.push({ key, weight: getTaskWeight(stats) });
+        }
+    }
+
+    const totalFailedWeight = failedTasks.reduce((sum, t) => sum + t.weight, 0);
+    const BASE_RANDOM_WEIGHT = 10;
+
+    // Replay a previously failed task with proportional probability
+    if (failedTasks.length > 0 && Math.random() * (totalFailedWeight + BASE_RANDOM_WEIGHT) < totalFailedWeight) {
+        const selected = weightedRandom(failedTasks);
+        // key format: precedence:{limit}:{expressionKey}
+        const expressionKey = selected.key.slice(`precedence:${limit}:`.length);
+        // Safe eval: keys contain only digits, +, -, *, /, (, )
+        const answer = Function(`"use strict"; return (${expressionKey})`)();
+        const expression = expressionKeyToDisplay(expressionKey);
+        return { expression, expressionKey, answer };
+    }
+
+    return generateFreshPrecedenceQuestion(limit);
+}
+
+// Convert an ASCII expressionKey back to the display string with Unicode operators
+function expressionKeyToDisplay(key) {
+    return key
+        .replace(/\*/g, ' × ')
+        .replace(/\//g, ' ÷ ')
+        .replace(/-/g, ' − ')
+        .replace(/\+/g, ' + ')
+        .replace(/\s+/g, ' ')
+        // Fix spacing inside parentheses: "( " -> "(" and " )" -> ")"
+        .replace(/\(\s+/g, '(')
+        .replace(/\s+\)/g, ')');
+}
+
+// Generate a fresh random precedence question for the given limit
+function generateFreshPrecedenceQuestion(limit) {
+    // Templates available for all limits (A-H)
+    const baseTemplates = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
+    // Additional 3-op templates for limit >= 20
+    const advancedTemplates = limit >= 20 ? ['J', 'K', 'L'] : [];
+    const templates = [...baseTemplates, ...advancedTemplates];
+
+    // Try templates in random order until one produces a valid question
+    const shuffled = templates.slice().sort(() => Math.random() - 0.5);
+
+    const maxMul = gameConfig.maxMultiplier || 10;
+    for (const tpl of shuffled) {
+        const q = tryTemplate(tpl, limit, maxMul);
+        if (q) return q;
+    }
+
+    // Fallback: simple addition (always valid)
+    const a = rand(1, Math.min(limit, 9));
+    const b = rand(1, Math.min(limit - a, 9));
+    return makeQuestion(`${a} + ${b}`, a + b);
+}
+
+// Random integer in [min, max]
+function rand(min, max) {
+    if (max < min) return null;
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+// Build a question object from a display expression and answer
+function makeQuestion(displayExpr, answer) {
+    const expressionKey = displayExpr
+        .replace(/×/g, '*')
+        .replace(/÷/g, '/')
+        .replace(/−/g, '-')
+        .replace(/\s+/g, '');
+    return { expression: displayExpr, expressionKey, answer };
+}
+
+// Attempt to generate a valid question for the given template, limit, and max multiplier/divisor.
+// Returns null if constraints cannot be satisfied.
+function tryTemplate(template, limit, maxMul) {
+    switch (template) {
+        case 'A': { // a + b × c
+            const b = rand(2, Math.min(maxMul, limit));
+            const c = rand(2, Math.min(maxMul, Math.floor(limit / b)));
+            if (!b || !c || b * c > limit) return null;
+            const a = rand(1, limit - b * c);
+            if (!a) return null;
+            return makeQuestion(`${a} + ${b} × ${c}`, a + b * c);
+        }
+        case 'B': { // a − b × c
+            const b = rand(2, Math.min(maxMul, limit));
+            const c = rand(2, Math.min(maxMul, Math.floor(limit / b)));
+            if (!b || !c) return null;
+            const product = b * c;
+            if (product > limit) return null;
+            const a = rand(product, limit);
+            if (a === null) return null;
+            return makeQuestion(`${a} − ${b} × ${c}`, a - product);
+        }
+        case 'C': { // a × b + c
+            const a = rand(2, Math.min(maxMul, limit));
+            const maxB = Math.min(maxMul, Math.floor(2 * limit / a));
+            const b = rand(2, maxB);
+            if (!b) return null;
+            const c = rand(1, Math.min(limit, 9));
+            return makeQuestion(`${a} × ${b} + ${c}`, a * b + c);
+        }
+        case 'D': { // a × b − c
+            const a = rand(2, Math.min(maxMul, limit));
+            const maxB = Math.min(maxMul, Math.floor(limit / a));
+            const b = rand(2, maxB);
+            if (!b) return null;
+            const product = a * b;
+            const c = rand(1, product);
+            if (!c) return null;
+            return makeQuestion(`${a} × ${b} − ${c}`, product - c);
+        }
+        case 'E': { // (a + b) × c
+            const c = rand(2, maxMul);
+            if (!c) return null;
+            const maxSum = Math.min(limit, Math.floor(2 * limit / c));
+            const a = rand(1, maxSum - 1);
+            if (!a) return null;
+            const b = rand(1, maxSum - a);
+            if (!b) return null;
+            return makeQuestion(`(${a} + ${b}) × ${c}`, (a + b) * c);
+        }
+        case 'F': { // (a − b) × c
+            const c = rand(2, maxMul);
+            if (!c) return null;
+            const a = rand(2, Math.min(limit, 9));
+            const b = rand(1, a - 1);
+            if (!b) return null;
+            return makeQuestion(`(${a} − ${b}) × ${c}`, (a - b) * c);
+        }
+        case 'G': { // a ÷ b + c  (a = b * q)
+            const b = rand(2, maxMul);
+            if (!b) return null;
+            const q = rand(2, Math.min(9, Math.floor(limit / b)));
+            if (!q) return null;
+            const a = b * q;
+            if (a > limit) return null;
+            const c = rand(1, Math.min(limit - a / b, 9));
+            if (!c) return null;
+            return makeQuestion(`${a} ÷ ${b} + ${c}`, q + c);
+        }
+        case 'H': { // a + b ÷ c  (b = c * q)
+            const c = rand(2, maxMul);
+            if (!c) return null;
+            const q = rand(1, Math.min(9, Math.floor(limit / c)));
+            if (!q) return null;
+            const b = c * q;
+            if (b > limit) return null;
+            const a = rand(1, Math.min(limit - b, 9));
+            if (!a) return null;
+            return makeQuestion(`${a} + ${b} ÷ ${c}`, a + q);
+        }
+        case 'I': { // (a + b) ÷ c
+            const c = rand(2, maxMul);
+            if (!c) return null;
+            const q = rand(1, Math.min(9, Math.floor(limit / c)));
+            if (!q) return null;
+            const sum = c * q;
+            if (sum > limit || sum < 2) return null;
+            const a = rand(1, sum - 1);
+            const b = sum - a;
+            if (b < 1) return null;
+            return makeQuestion(`(${a} + ${b}) ÷ ${c}`, q);
+        }
+        case 'J': { // a + b × c − d
+            const b = rand(2, Math.min(maxMul, limit));
+            const c = rand(2, Math.min(maxMul, Math.floor(limit / b)));
+            if (!c || b * c > limit) return null;
+            const a = rand(1, limit);
+            const product = b * c;
+            const d = rand(1, Math.min(a, product, 9));
+            if (!d) return null;
+            return makeQuestion(`${a} + ${b} × ${c} − ${d}`, a + product - d);
+        }
+        case 'K': { // (a + b) × c + d
+            const c = rand(2, Math.min(maxMul, 4));
+            if (!c) return null;
+            const maxSum = Math.min(Math.floor(limit / c), 9);
+            const a = rand(1, maxSum - 1);
+            if (!a) return null;
+            const b = rand(1, maxSum - a);
+            if (!b) return null;
+            const d = rand(1, Math.min(limit, 9));
+            return makeQuestion(`(${a} + ${b}) × ${c} + ${d}`, (a + b) * c + d);
+        }
+        case 'L': { // (a + b) × (c − d)
+            const a = rand(1, Math.min(9, limit));
+            const b = rand(1, Math.min(9, limit - a));
+            if (!b) return null;
+            const c = rand(3, Math.min(maxMul, 9, Math.floor(limit / (a + b))));
+            if (!c) return null;
+            const d = rand(1, c - 1);
+            return makeQuestion(`(${a} + ${b}) × (${c} − ${d})`, (a + b) * (c - d));
+        }
+        default:
+            return null;
+    }
+}
+
 // Display next question
 function nextQuestion() {
     // Clear feedback
@@ -261,13 +474,22 @@ function nextQuestion() {
     }
     
     const question = questions[currentQuestion];
-    
+
     // Update UI
     document.getElementById('questionNumber').textContent = currentQuestion + 1;
-    document.getElementById('num1').textContent = question.num1;
-    document.getElementById('operator').textContent = question.operator;
-    document.getElementById('num2').textContent = question.num2;
-    
+    const isPrecedence = gameConfig.type === 'precedence';
+    document.getElementById('expressionDisplay').style.display = isPrecedence ? '' : 'none';
+    document.getElementById('num1').style.display = isPrecedence ? 'none' : '';
+    document.getElementById('operator').style.display = isPrecedence ? 'none' : '';
+    document.getElementById('num2').style.display = isPrecedence ? 'none' : '';
+    if (isPrecedence) {
+        document.getElementById('expressionDisplay').textContent = question.expression;
+    } else {
+        document.getElementById('num1').textContent = question.num1;
+        document.getElementById('operator').textContent = question.operator;
+        document.getElementById('num2').textContent = question.num2;
+    }
+
     // Start timer
     startTime = Date.now();
     startTimer();

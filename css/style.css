@@ -431,6 +431,11 @@ body {
     margin: 0 10px;
 }
 
+#expressionDisplay {
+    word-break: break-word;
+    max-width: 100%;
+}
+
 .timer {
     font-size: 1.5em;
     color: #666;
