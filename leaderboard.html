@@ -18,6 +18,14 @@
             <button class="filter-btn" onclick="filterLeaderboard('add', event)">➕➖ Összeadás/Kivonás</button>
         </div>
 
+        <!-- Player filter -->
+        <div class="filter-players">
+            <label for="playerFilter">👤 Játékos:</label>
+            <select id="playerFilter" onchange="displayLeaderboard()">
+                <option value="">Mindenki</option>
+            </select>
+        </div>
+
         <!-- Motivational personal-best banner -->
         <div id="personalBestBanner" class="personal-best-banner" style="display: none;"></div>
 
@@ -101,7 +109,11 @@
             const noScores = document.getElementById('noScores');
             const banner = document.getElementById('personalBestBanner');
 
-            const filteredScores = scores.filter(s => s.gameType === currentFilter);
+            const selectedPlayer = document.getElementById('playerFilter').value;
+            const filteredScores = scores.filter(s =>
+                s.gameType === currentFilter &&
+                (selectedPlayer === '' || s.playerName === selectedPlayer)
+            );
 
             if (filteredScores.length === 0) {
                 tbody.innerHTML = '';
@@ -129,7 +141,7 @@
 
             tbody.innerHTML = filteredScores.map((score, index) => {
                 const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : (index + 1);
-                const date = new Date(score.date).toLocaleDateString('hu-HU');
+                const date = new Date(score.date).toLocaleString('hu-HU');
                 const isTopScore = index === 0;
                 const rowClass = isTopScore ? 'top-score-row' : '';
                 
@@ -176,7 +188,20 @@
             window.location.href = 'index.html';
         }
 
+        // Populate player filter dropdown
+        function populatePlayerFilter() {
+            const select = document.getElementById('playerFilter');
+            const users = getAllUsers();
+            users.forEach(name => {
+                const opt = document.createElement('option');
+                opt.value = name;
+                opt.textContent = name;
+                select.appendChild(opt);
+            });
+        }
+
         // Initialize
+        populatePlayerFilter();
         displayLeaderboard();
         displayStatistics();
     </script>

@@ -97,11 +97,10 @@ function saveScore(playerName, score, gameType, correct, total) {
     
     scores.push(newScore);
     
-    // Keep only top 100 scores
-    const topScores = scores.sort((a, b) => b.score - a.score).slice(0, 100);
-    
+    const sorted = scores.sort((a, b) => b.score - a.score);
+
     try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(topScores));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(sorted));
         
         // Update per-user statistics
         updateStatistics(score, gameType, playerName);

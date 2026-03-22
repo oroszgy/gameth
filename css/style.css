@@ -552,6 +552,24 @@ body {
     font-weight: bold;
 }
 
+/* Leaderboard player filter */
+.filter-players {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    font-size: 1em;
+}
+
+.filter-players select {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 2px solid #ccc;
+    font-size: 1em;
+    cursor: pointer;
+}
+
 /* Leaderboard */
 .filter-buttons {
     display: flex;
